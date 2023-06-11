@@ -14,6 +14,16 @@
 const uint32_t WIDTH = 800;
 const uint32_t HEIGHT = 600;
 
+#ifdef NDEBUG
+const bool enableValidationLayers = false;
+#else
+const bool enableValidationLayers = true;
+#endif
+
+const std::vector<const char*> validationLayers = {
+	"VK_LAYER_KHRONOS_validation"
+};
+
 class TriangleApplication {
 public:
 
@@ -23,9 +33,12 @@ private:
     VkInstance instance;
     GLFWwindow *window;
     VkDevice device;
+	VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
+	VkQueue graphicsQueue;
+	VkSurfaceKHR surface;
+	VkQueue presentQueue;
 
-
-    void initWindow();
+	void initWindow();
 
     void initVulkan();
 
@@ -41,6 +54,8 @@ private:
 
     QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
     void createLogicalDevice();
+
+	void createSurface();
 };
 
 

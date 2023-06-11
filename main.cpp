@@ -6,6 +6,7 @@
 #include <cstdlib>
 #include "src/TriangleApplication.h"
 
+VkSurfaceKHR surface;
 
 
 int main() {
