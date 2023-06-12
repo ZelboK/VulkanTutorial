@@ -9,9 +9,13 @@
 VkSurfaceKHR surface;
 
 
+void test(int* value) {
+
+}
+
 int main() {
     TriangleApplication app;
-
+     
     try {
         app.run();
     } catch (const std::exception &e) {

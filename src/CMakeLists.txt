@@ -5,7 +5,7 @@ set(source_files
 
 set(headers
         TriangleApplication.h
-        QueueFamilyIndices.h)
+        QueueFamilyIndices.h "SwapChainSupportDetails .h")
 
 add_library(Source
         ${source_files}
