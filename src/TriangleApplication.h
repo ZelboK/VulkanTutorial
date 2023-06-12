@@ -11,7 +11,6 @@
 #include "QueueFamilyIndices.h"
 #include "SwapChainSupportDetails .h"
 
-
 const uint32_t WIDTH = 800;
 const uint32_t HEIGHT = 600;
 
@@ -21,69 +20,70 @@ const bool enableValidationLayers = false;
 const bool enableValidationLayers = false;
 #endif
 
-const std::vector<const char *> validationLayers = {
-        "VK_LAYER_KHRONOS_validation"
+const std::vector<const char*> validationLayers = {
+	"VK_LAYER_KHRONOS_validation"
 };
 
-const std::vector<const char *> deviceExtensions = {
-        VK_KHR_SWAPCHAIN_EXTENSION_NAME
+const std::vector<const char*> deviceExtensions = {
+	VK_KHR_SWAPCHAIN_EXTENSION_NAME
 };
 
-class TriangleApplication {
-public:
+class TriangleApplication
+{
+ public:
 
-    void run();
+	void run();
 
-private:
-    VkInstance instance;
-    GLFWwindow *window;
-    VkDevice device;
-    VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
-    VkQueue graphicsQueue;
-    VkSurfaceKHR surface;
-    VkQueue presentQueue;
-    VkSwapchainKHR swapChain;
-    std::vector<VkImage> swapChainImages;
-    std::vector<VkImageView> swapChainImageViews;
-    VkFormat swapChainImageFormat;
-    VkExtent2D swapChainExtent;
+ private:
+	VkInstance instance;
+	GLFWwindow* window;
+	VkDevice device;
+	VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
+	VkQueue graphicsQueue;
+	VkSurfaceKHR surface;
+	VkQueue presentQueue;
+	VkSwapchainKHR swapChain;
+	std::vector<VkImage> swapChainImages;
+	std::vector<VkImageView> swapChainImageViews;
+	VkFormat swapChainImageFormat;
+	VkExtent2D swapChainExtent;
 
-    void initWindow();
+	void initWindow();
 
-    void initVulkan();
+	void initVulkan();
 
-    void createInstance();
+	void createInstance();
 
-    void mainLoop();
+	void mainLoop();
 
-    void cleanup();
+	void cleanup();
 
-    void pickPhysicalDevice();
+	void pickPhysicalDevice();
 
-    bool isDeviceSuitable(VkPhysicalDevice device);
+	bool isDeviceSuitable(VkPhysicalDevice device);
 
-    QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
+	QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
 
-    void createLogicalDevice();
+	void createLogicalDevice();
 
-    void createSurface();
+	void createSurface();
 
-    bool checkDeviceExtensionSupport(VkPhysicalDevice device);
+	bool checkDeviceExtensionSupport(VkPhysicalDevice device);
 
-    SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
+	SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
 
-    VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR> &availableFormats);
+	VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
 
+	VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
 
-    VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR> &availablePresentModes);
+	VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
 
-    VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities);
+	void createSwapChain();
 
-    void createSwapChain();
+	void createImageViews();
 
-    void     createImageViews();
+	void createGraphicsPipeline();
 
 };
-
 
 #endif //VULK_TRIANGLEAPPLICATION_H
