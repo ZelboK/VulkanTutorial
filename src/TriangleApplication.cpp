@@ -34,6 +34,7 @@ void TriangleApplication::initVulkan() {
     pickPhysicalDevice();
     createLogicalDevice();
     createSwapChain();
+    createImageViews();
 }
 
 void TriangleApplication::createInstance() {
@@ -344,4 +345,9 @@ void TriangleApplication::createSwapChain() {
 
     swapChainImageFormat = surfaceFormat.format;
     swapChainExtent = extent;
+}
+
+void TriangleApplication::createImageViews() {
+    swapChainImageViews.resize(swapChainImages.size());
+
 }
