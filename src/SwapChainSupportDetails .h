@@ -5,7 +5,6 @@
 #ifndef VULK_SWAPCHAINSUPPORTDETAILS_H
 #define VULK_SWAPCHAINSUPPORTDETAILS_H
 
-#include <vulkan/vulkan_core.h>
 #include <vector>
 
 struct SwapChainSupportDetails {

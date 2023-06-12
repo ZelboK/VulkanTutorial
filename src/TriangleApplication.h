@@ -18,7 +18,7 @@ const uint32_t HEIGHT = 600;
 #ifdef NDEBUG
 const bool enableValidationLayers = false;
 #else
-const bool enableValidationLayers = true;
+const bool enableValidationLayers = false;
 #endif
 
 const std::vector<const char *> validationLayers = {

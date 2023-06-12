@@ -6,7 +6,6 @@
 #define VULK_QUEUEFAMILYINDICES_H
 
 #include <cstdint>
-#include <vulkan/vulkan_core.h>
 #include <optional>
 #include <vector>
 

@@ -5,14 +5,10 @@
 #include "TriangleApplication.h"
 #include "QueueFamilyIndices.h"
 
-
-#define GLFW_INCLUDE_VULKAN
-
 #include <GLFW/glfw3.h>
 #include <stdexcept>
 #include <vector>
 #include <set>
-#include <cstdint> // Necessary for uint32_t
 #include <limits> // Necessary for std::numeric_limits
 #include <algorithm> // Necessary for std::clamp
 
@@ -67,9 +63,9 @@ void TriangleApplication::createInstance() {
 
     createInfo.enabledExtensionCount = (uint32_t) requiredExtensions.size();
     createInfo.ppEnabledExtensionNames = requiredExtensions.data();
-    createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
-
-    createInfo.ppEnabledLayerNames = validationLayers.data();
+//    createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
+//
+//    createInfo.ppEnabledLayerNames = validationLayers.data();
 
     if (vkCreateInstance(&createInfo,
                          nullptr,
