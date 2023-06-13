@@ -21,3 +21,19 @@ target_link_libraries(Vulk
 
 add_subdirectory(src)
 add_subdirectory(test)
+
+add_custom_command(
+        OUTPUT "${CMAKE_BINARY_DIR}/shaders"
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_SOURCE_DIR}/shaders
+        ${CMAKE_BINARY_DIR}/shaders
+        COMMENT "Copying shaders to build directory"
+        DEPENDS ${CMAKE_SOURCE_DIR}/shaders
+)
+
+add_custom_target(
+        copy_shaders_target ALL
+        DEPENDS "${CMAKE_BINARY_DIR}/shaders"
+)
+
+add_dependencies(Vulk copy_shaders_target)

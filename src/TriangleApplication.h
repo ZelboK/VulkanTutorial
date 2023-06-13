@@ -9,7 +9,7 @@
 
 #include <GLFW/glfw3.h>
 #include "QueueFamilyIndices.h"
-#include "SwapChainSupportDetails .h"
+#include "SwapChainSupportDetails.h"
 
 const uint32_t WIDTH = 800;
 const uint32_t HEIGHT = 600;
@@ -83,7 +83,7 @@ class TriangleApplication
 	void createImageViews();
 
 	void createGraphicsPipeline();
-
+	VkShaderModule createShaderModule(const std::vector<char>& code);
 };
 
 #endif //VULK_TRIANGLEAPPLICATION_H

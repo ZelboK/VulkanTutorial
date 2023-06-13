@@ -1,11 +1,13 @@
 
 set(source_files
         TriangleApplication.cpp
-        )
+        FileUtil.cpp)
 
 set(headers
         TriangleApplication.h
-        QueueFamilyIndices.h "SwapChainSupportDetails .h")
+        QueueFamilyIndices.h
+        SwapChainSupportDetails.h
+        FileUtil.h)
 
 add_library(Source
         ${source_files}

@@ -4,9 +4,13 @@
 #include <cstdlib>
 #include "src/TriangleApplication.h"
 
+#include <filesystem>
 
 int main() {
-    TriangleApplication app;
+	std::filesystem::path working_dir = std::filesystem::current_path();
+	std::cout << "Working directory: " << working_dir << "\n";
+
+	TriangleApplication app;
 
     try {
         app.run();
