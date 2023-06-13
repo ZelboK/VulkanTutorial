@@ -47,6 +47,10 @@ class TriangleApplication
 	std::vector<VkImageView> swapChainImageViews;
 	VkFormat swapChainImageFormat;
 	VkExtent2D swapChainExtent;
+	VkRenderPass renderPass;
+	VkPipelineLayout pipelineLayout;
+	VkPipeline graphicsPipeline;
+
 
 	void initWindow();
 
@@ -83,6 +87,9 @@ class TriangleApplication
 	void createImageViews();
 
 	void createGraphicsPipeline();
+
+	void createRenderPass();
+
 	VkShaderModule createShaderModule(const std::vector<char>& code);
 };
 
