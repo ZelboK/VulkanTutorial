@@ -50,6 +50,9 @@ class TriangleApplication
 	VkPipeline graphicsPipeline;
     VkCommandPool commandPool;
     VkCommandBuffer commandBuffer;
+	VkSemaphore imageAvailableSemaphore;
+	VkSemaphore renderFinishedSemaphore;
+	VkFence inFlightFence;
     std::vector<VkImage> swapChainImages;
     std::vector<VkImageView> swapChainImageViews;
     std::vector<VkFramebuffer> swapChainFramebuffers;
@@ -69,21 +72,28 @@ class TriangleApplication
 
 	bool isDeviceSuitable(VkPhysicalDevice device);
 
-	QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
-
-	void createLogicalDevice();
-
-	void createSurface();
+	SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
 
 	bool checkDeviceExtensionSupport(VkPhysicalDevice device);
 
-	SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
+
+	QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
 
 	VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
 
 	VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
 
 	VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
+
+	VkShaderModule createShaderModule(const std::vector<char>& code);
+
+
+
+	void createLogicalDevice();
+
+	void createSurface();
+
+
 
 	void createSwapChain();
 
@@ -93,7 +103,6 @@ class TriangleApplication
 
 	void createRenderPass();
 
-	VkShaderModule createShaderModule(const std::vector<char>& code);
 
     void createFramebuffers();
 
@@ -103,6 +112,8 @@ class TriangleApplication
 
     void recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
     void drawFrame();
+
+	void createSyncObjects();
 };
 
 #endif //VULK_TRIANGLEAPPLICATION_H
