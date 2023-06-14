@@ -3,6 +3,8 @@
 //
 #include "FileUtil.h"
 #include <fstream>
+#include <vector>
+
 namespace FileUtil {
 	std::vector<char> readFile(const std::string& filename) {
 		std::ifstream file(filename, std::ios::ate | std::ios::binary);

@@ -6,6 +6,8 @@
 #define VULK_SRC_FILEUTIL_H_
 
 #include <fstream>
+#include <vector>
+
 namespace FileUtil
 {
 	std::vector<char> readFile(const std::string& filename);

@@ -35,24 +35,27 @@ class TriangleApplication
 	void run();
 
  private:
+    GLFWwindow* window;
 	VkInstance instance;
-	GLFWwindow* window;
 	VkDevice device;
 	VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
 	VkQueue graphicsQueue;
 	VkSurfaceKHR surface;
 	VkQueue presentQueue;
 	VkSwapchainKHR swapChain;
-	std::vector<VkImage> swapChainImages;
-	std::vector<VkImageView> swapChainImageViews;
 	VkFormat swapChainImageFormat;
 	VkExtent2D swapChainExtent;
 	VkRenderPass renderPass;
 	VkPipelineLayout pipelineLayout;
 	VkPipeline graphicsPipeline;
+    VkCommandPool commandPool;
+    VkCommandBuffer commandBuffer;
+    std::vector<VkImage> swapChainImages;
+    std::vector<VkImageView> swapChainImageViews;
+    std::vector<VkFramebuffer> swapChainFramebuffers;
 
 
-	void initWindow();
+    void initWindow();
 
 	void initVulkan();
 
@@ -91,6 +94,15 @@ class TriangleApplication
 	void createRenderPass();
 
 	VkShaderModule createShaderModule(const std::vector<char>& code);
+
+    void createFramebuffers();
+
+    void createCommandPool();
+
+    void createCommandBuffer();
+
+    void recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
+    void drawFrame();
 };
 
 #endif //VULK_TRIANGLEAPPLICATION_H
