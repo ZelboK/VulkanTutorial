@@ -20,39 +20,38 @@ const bool enableValidationLayers = false;
 const bool enableValidationLayers = false;
 #endif
 
-const std::vector<const char*> validationLayers = {
-	"VK_LAYER_KHRONOS_validation"
+const std::vector<const char *> validationLayers = {
+        "VK_LAYER_KHRONOS_validation"
 };
 
-const std::vector<const char*> deviceExtensions = {
-	VK_KHR_SWAPCHAIN_EXTENSION_NAME
+const std::vector<const char *> deviceExtensions = {
+        VK_KHR_SWAPCHAIN_EXTENSION_NAME
 };
 
-class TriangleApplication
-{
- public:
+class TriangleApplication {
+public:
 
-	void run();
+    void run();
 
- private:
-    GLFWwindow* window;
-	VkInstance instance;
-	VkDevice device;
-	VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
-	VkQueue graphicsQueue;
-	VkSurfaceKHR surface;
-	VkQueue presentQueue;
-	VkSwapchainKHR swapChain;
-	VkFormat swapChainImageFormat;
-	VkExtent2D swapChainExtent;
-	VkRenderPass renderPass;
-	VkPipelineLayout pipelineLayout;
-	VkPipeline graphicsPipeline;
+private:
+    GLFWwindow *window;
+    VkInstance instance;
+    VkDevice device;
+    VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
+    VkQueue graphicsQueue;
+    VkSurfaceKHR surface;
+    VkQueue presentQueue;
+    VkSwapchainKHR swapChain;
+    VkFormat swapChainImageFormat;
+    VkExtent2D swapChainExtent;
+    VkRenderPass renderPass;
+    VkPipelineLayout pipelineLayout;
+    VkPipeline graphicsPipeline;
     VkCommandPool commandPool;
     VkCommandBuffer commandBuffer;
-	VkSemaphore imageAvailableSemaphore;
-	VkSemaphore renderFinishedSemaphore;
-	VkFence inFlightFence;
+    VkSemaphore imageAvailableSemaphore;
+    VkSemaphore renderFinishedSemaphore;
+    VkFence inFlightFence;
     std::vector<VkImage> swapChainImages;
     std::vector<VkImageView> swapChainImageViews;
     std::vector<VkFramebuffer> swapChainFramebuffers;
@@ -60,48 +59,46 @@ class TriangleApplication
 
     void initWindow();
 
-	void initVulkan();
+    void initVulkan();
 
-	void createInstance();
+    void createInstance();
 
-	void mainLoop();
+    void mainLoop();
 
-	void cleanup();
+    void cleanup();
 
-	void pickPhysicalDevice();
+    void pickPhysicalDevice();
 
-	bool isDeviceSuitable(VkPhysicalDevice device);
+    bool isDeviceSuitable(VkPhysicalDevice device);
 
-	SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
+    SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
 
-	bool checkDeviceExtensionSupport(VkPhysicalDevice device);
-
-
-	QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
-
-	VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
-
-	VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
-
-	VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
-
-	VkShaderModule createShaderModule(const std::vector<char>& code);
+    bool checkDeviceExtensionSupport(VkPhysicalDevice device);
 
 
+    QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
 
-	void createLogicalDevice();
+    VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR> &availableFormats);
 
-	void createSurface();
+    VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR> &availablePresentModes);
+
+    VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities);
+
+    VkShaderModule createShaderModule(const std::vector<char> &code);
 
 
+    void createLogicalDevice();
 
-	void createSwapChain();
+    void createSurface();
 
-	void createImageViews();
 
-	void createGraphicsPipeline();
+    void createSwapChain();
 
-	void createRenderPass();
+    void createImageViews();
+
+    void createGraphicsPipeline();
+
+    void createRenderPass();
 
 
     void createFramebuffers();
@@ -111,9 +108,10 @@ class TriangleApplication
     void createCommandBuffer();
 
     void recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
+
     void drawFrame();
 
-	void createSyncObjects();
+    void createSyncObjects();
 };
 
 #endif //VULK_TRIANGLEAPPLICATION_H

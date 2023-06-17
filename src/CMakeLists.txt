@@ -7,7 +7,7 @@ set(headers
         TriangleApplication.h
         QueueFamilyIndices.h
         SwapChainSupportDetails.h
-        FileUtil.h)
+        FileUtil.h BicubicSplineInterpolator.h)
 
 add_library(Source
         ${source_files}

@@ -1,7 +1,7 @@
 
 set(source_files
         Main.cpp
-        )
+        ../src/BicubicSplineInterpolator.cpp)
 
 set(headers
 
