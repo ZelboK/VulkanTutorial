@@ -4,10 +4,12 @@
 
 #include <stdexcept>
 #include "BicubicSplineInterpolator.h"
+#include "FileUtil.h"
 #include <algorithm> // Necessary for std::clamp
 #include <vector>
 #include <set>
 #include <array>
+#include <string>
 
 const int MAX_FRAMES_IN_FLIGHT = 2;
 
@@ -26,7 +28,7 @@ QueueFamilyIndices BicubicSplineInterpolator::findQueueFamilies(VkPhysicalDevice
 	{
 		if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT)
 		{
-			indices.graphicsFamily = i;
+			indices.graphicsAndComputeFamily = i;
 		}
 
 		VkBool32 presentSupport = false;
@@ -37,7 +39,7 @@ QueueFamilyIndices BicubicSplineInterpolator::findQueueFamilies(VkPhysicalDevice
 			indices.presentFamily = i;
 		}
 
-		if (indices.isCompleteForCompute())
+		if (indices.isComplete())
 		{
 			break;
 		}
@@ -53,9 +55,8 @@ void BicubicSplineInterpolator::createLogicalDevice()
 	QueueFamilyIndices indices = findQueueFamilies(physicalDevice);
 
 	std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
-	std::set<uint32_t> uniqueQueueFamilies = { indices.graphicsFamily.value(),
-											   indices.presentFamily.value(),
-											   indices.computeFamily.value() };
+	std::set<uint32_t> uniqueQueueFamilies = { indices.graphicsAndComputeFamily.value(),
+											   indices.presentFamily.value() };
 
 	float queuePriority = 1.0f;
 	for (uint32_t queueFamily : uniqueQueueFamilies)
@@ -282,6 +283,35 @@ bool BicubicSplineInterpolator::checkDeviceExtensionSupport(VkPhysicalDevice vkP
 
 void BicubicSplineInterpolator::createComputePipeline()
 {
+	auto computeShaderCode = FileUtil::readFile("shaders/comp.spv");
+
+	VkShaderModule computeShaderModule = createShaderModule(computeShaderCode);
+
+	VkPipelineShaderStageCreateInfo computeShaderStageInfo{};
+	computeShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+	computeShaderStageInfo.stage = VK_SHADER_STAGE_COMPUTE_BIT;
+	computeShaderStageInfo.module = computeShaderModule;
+	computeShaderStageInfo.pName = "main";
+
+	VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
+	pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+	pipelineLayoutInfo.setLayoutCount = 1;
+	pipelineLayoutInfo.pSetLayouts = &descriptorSetLayout;
+
+	if (vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) {
+		throw std::runtime_error("failed to create compute pipeline layout!");
+	}
+
+	VkComputePipelineCreateInfo pipelineInfo{};
+	pipelineInfo.sType = VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO;
+	pipelineInfo.layout = pipelineLayout;
+	pipelineInfo.stage = computeShaderStageInfo;
+
+	if (vkCreateComputePipelines(device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &computePipeline) != VK_SUCCESS) {
+		throw std::runtime_error("failed to create compute pipeline!");
+	}
+
+	vkDestroyShaderModule(device, computeShaderModule, nullptr);
 
 }
 
@@ -292,7 +322,7 @@ void BicubicSplineInterpolator::createCommandPool()
 	VkCommandPoolCreateInfo poolInfo{};
 	poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
 	poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-	poolInfo.queueFamilyIndex = queueFamilyIndices.graphicsFamily.value();
+	poolInfo.queueFamilyIndex = queueFamilyIndices.graphicsAndComputeFamily.value();
 
 	if (vkCreateCommandPool(device, &poolInfo, nullptr, &commandPool) != VK_SUCCESS)
 	{
@@ -335,7 +365,7 @@ void BicubicSplineInterpolator::createSyncObjects()
 	}
 }
 
-void BicubicSplineInterpolator::recordCommandBuffer()
+void BicubicSplineInterpolator::recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex)
 {
 	VkCommandBufferBeginInfo beginInfo{};
 	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -369,105 +399,11 @@ void BicubicSplineInterpolator::recordCommandBuffer()
 	}
 }
 
-void BicubicSplineInterpolator::setup_descriptor_set_layout()
-{
-	std::array<VkDescriptorSetLayoutBinding, 3> layoutBindings{};
-	layoutBindings[0].binding = 0;
-	layoutBindings[0].descriptorCount = 1;
-	layoutBindings[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-	layoutBindings[0].pImmutableSamplers = nullptr;
-	layoutBindings[0].stageFlags = VK_SHADER_STAGE_COMPUTE_BIT;
-
-	layoutBindings[1].binding = 1;
-	layoutBindings[1].descriptorCount = 1;
-	layoutBindings[1].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-	layoutBindings[1].pImmutableSamplers = nullptr;
-	layoutBindings[1].stageFlags = VK_SHADER_STAGE_COMPUTE_BIT;
-
-	layoutBindings[2].binding = 2;
-	layoutBindings[2].descriptorCount = 1;
-	layoutBindings[2].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-	layoutBindings[2].pImmutableSamplers = nullptr;
-	layoutBindings[2].stageFlags = VK_SHADER_STAGE_COMPUTE_BIT;
-
-	VkDescriptorSetLayoutCreateInfo layoutInfo{};
-	layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-	layoutInfo.bindingCount = 3;
-	layoutInfo.pBindings = layoutBindings.data();
-
-	if (vkCreateDescriptorSetLayout(device,
-		&layoutInfo,
-		nullptr, &descriptorSetLayout) != VK_SUCCESS)
-	{
-		throw std::runtime_error("failed to create compute descriptor set layout!");
-	}
-}
-
-void BicubicSplineInterpolator::setup_descriptor_set()
-{
-	std::vector<VkDescriptorSetLayout> layouts(2, descriptorSetLayout);
-	VkDescriptorSetAllocateInfo allocInfo{};
-	allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-	allocInfo.descriptorPool = descriptorPool;
-	allocInfo.descriptorSetCount = static_cast<uint32_t>(2);
-	allocInfo.pSetLayouts = layouts.data();
-
-	computeDescriptorSets.resize(MAX_FRAMES_IN_FLIGHT);
-	if (vkAllocateDescriptorSets(device, &allocInfo, computeDescriptorSets.data()) != VK_SUCCESS)
-	{
-		throw std::runtime_error("failed to allocate descriptor sets!");
-	}
-
-	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
-	{
-		VkDescriptorBufferInfo uniformBufferInfo{};
-		uniformBufferInfo.buffer = uniformBuffers[i];
-		uniformBufferInfo.offset = 0;
-		uniformBufferInfo.range = sizeof(UniformBufferObject);
-
-		std::array<VkWriteDescriptorSet, 3> descriptorWrites{};
-		descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		descriptorWrites[0].dstSet = computeDescriptorSets[i];
-		descriptorWrites[0].dstBinding = 0;
-		descriptorWrites[0].dstArrayElement = 0;
-		descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-		descriptorWrites[0].descriptorCount = 1;
-		descriptorWrites[0].pBufferInfo = &uniformBufferInfo;
-
-		VkDescriptorBufferInfo storageBufferInfoLastFrame{};
-		storageBufferInfoLastFrame.buffer = shaderStorageBuffers[(i - 1) % MAX_FRAMES_IN_FLIGHT];
-		storageBufferInfoLastFrame.offset = 0;
-		storageBufferInfoLastFrame.range = sizeof(Particle) * PARTICLE_COUNT;
-
-		descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		descriptorWrites[1].dstSet = computeDescriptorSets[i];
-		descriptorWrites[1].dstBinding = 1;
-		descriptorWrites[1].dstArrayElement = 0;
-		descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-		descriptorWrites[1].descriptorCount = 1;
-		descriptorWrites[1].pBufferInfo = &storageBufferInfoLastFrame;
-
-		VkDescriptorBufferInfo storageBufferInfoCurrentFrame{};
-		storageBufferInfoCurrentFrame.buffer = shaderStorageBuffers[i];
-		storageBufferInfoCurrentFrame.offset = 0;
-		storageBufferInfoCurrentFrame.range = sizeof(Particle) * PARTICLE_COUNT;
-
-		descriptorWrites[2].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		descriptorWrites[2].dstSet = computeDescriptorSets[i];
-		descriptorWrites[2].dstBinding = 2;
-		descriptorWrites[2].dstArrayElement = 0;
-		descriptorWrites[2].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-		descriptorWrites[2].descriptorCount = 1;
-		descriptorWrites[2].pBufferInfo = &storageBufferInfoCurrentFrame;
-
-		vkUpdateDescriptorSets(device, 3, descriptorWrites.data(), 0, nullptr);
-	}
-}
-
 void BicubicSplineInterpolator::conduct()
 {
 	VkSubmitInfo submitInfo{};
 	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+	uint32_t imageIndex;
 
 	// Compute submission
 	vkWaitForFences(device, 1, &computeInFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
@@ -476,7 +412,7 @@ void BicubicSplineInterpolator::conduct()
 
 	vkResetCommandBuffer(computeCommandBuffers[currentFrame],
 		/*VkCommandBufferResetFlagBits*/ 0);
-	recordCommandBuffer(computeCommandBuffers[currentFrame]);
+	recordCommandBuffer(computeCommandBuffers[currentFrame], imageIndex);
 
 }
 
@@ -503,11 +439,15 @@ recordComputeCommandBuffer(VkCommandBuffer commandBuffer)
 		0,
 		nullptr);
 
-	vkCmdDispatch(commandBuffer, PARTICLE_COUNT / 256, 1, 1);
+	vkCmdDispatch(commandBuffer, 564654564 / 256, 1, 1);
 
 	if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS)
 	{
 		throw std::runtime_error("failed to record compute command buffer!");
 	}
+
+}
+
+void BicubicSplineInterpolator::updateUniformBuffer(uint32_t currentImage) {
 
 }

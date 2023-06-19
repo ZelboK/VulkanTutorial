@@ -89,13 +89,9 @@ class BicubicSplineInterpolator
 
 	void createSyncObjects();
 
-	void recordCommandBuffer();
+	void recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
 
 	void recordComputeCommandBuffer(VkCommandBuffer commandBuffer);
-
-	void setup_descriptor_set_layout();
-
-	void setup_descriptor_set();
 
 	void updateUniformBuffer(uint32_t currentImage);
 
