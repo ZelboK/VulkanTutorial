@@ -9,15 +9,21 @@ add_executable(Vulk main.cpp
 
 find_package(Vulkan REQUIRED)
 find_package(glfw3 3.3 REQUIRED)
+find_package(Catch2)
+find_package(OpenCV CONFIG REQUIRED)
 
 target_include_directories(Vulk
         PRIVATE
         ${PROJECT_SOURCE_DIR}/external)
+
 target_link_libraries(Vulk
         PRIVATE
         glfw
         Vulkan::Vulkan
-        Source)
+        Source
+        opencv_ml opencv_dnn opencv_core opencv_flann
+        Catch2)
+
 
 add_subdirectory(src)
 add_subdirectory(test)

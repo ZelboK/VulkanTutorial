@@ -97,7 +97,7 @@ void BicubicSplineInterpolator::createLogicalDevice()
 		throw std::runtime_error("failed to create logical device!");
 	}
 
-	vkGetDeviceQueue(device, indices.computeFamily.value(), 0, &computeQueue);
+	vkGetDeviceQueue(device, indices.graphicsAndComputeFamily.value(), 0, &computeQueue);
 }
 
 void BicubicSplineInterpolator::run()

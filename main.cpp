@@ -3,8 +3,8 @@
 #include <stdexcept>
 #include <cstdlib>
 #include "src/BicubicSplineInterpolator.h"
-
 #include <filesystem>
+
 
 int main() {
 	std::filesystem::path working_dir = std::filesystem::current_path();
