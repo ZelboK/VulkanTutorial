@@ -9,6 +9,7 @@ add_executable(Vulk main.cpp
 
 find_package(Vulkan REQUIRED)
 find_package(glfw3 3.3 REQUIRED)
+find_package(OpenCV CONFIG REQUIRED)
 
 target_include_directories(Vulk
         PRIVATE
@@ -17,7 +18,9 @@ target_link_libraries(Vulk
         PRIVATE
         glfw
         Vulkan::Vulkan
-        Source)
+        Source
+        ${OpenCV_LIBS})
+
 
 add_subdirectory(src)
 add_subdirectory(test)

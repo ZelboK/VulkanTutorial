@@ -3,7 +3,6 @@
 #include <stdexcept>
 #include <cstdlib>
 #include "src/BicubicSplineInterpolator.h"
-
 #include <filesystem>
 
 int main() {

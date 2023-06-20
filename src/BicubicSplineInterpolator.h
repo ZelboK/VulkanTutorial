@@ -44,6 +44,7 @@ class BicubicSplineInterpolator
 	VkDescriptorSetLayout descriptorSetLayout;
 	VkDescriptorSet descriptorSet;
 	uint32_t currentFrame = 0;
+	uint64_t originalImageBufferSize = 0; // when to init?
 	std::vector<VkSemaphore> renderFinishedSemaphores;
 	std::vector<VkSemaphore> computeFinishedSemaphores;
 	std::vector<VkFence> inFlightFences;

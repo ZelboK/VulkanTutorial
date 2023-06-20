@@ -97,7 +97,7 @@ void BicubicSplineInterpolator::createLogicalDevice()
 		throw std::runtime_error("failed to create logical device!");
 	}
 
-	vkGetDeviceQueue(device, indices.computeFamily.value(), 0, &computeQueue);
+	vkGetDeviceQueue(device, indices.graphicsAndComputeFamily.value(), 0, &computeQueue);
 }
 
 void BicubicSplineInterpolator::run()
@@ -375,23 +375,12 @@ void BicubicSplineInterpolator::recordCommandBuffer(VkCommandBuffer commandBuffe
 		throw std::runtime_error("failed to begin recording command buffer!");
 	}
 
-	VkClearValue clearColor = {{{ 0.0f, 0.0f, 0.0f, 1.0f }}};
-
 	vkCmdBindPipeline(commandBuffer,
 		VK_PIPELINE_BIND_POINT_GRAPHICS, computePipeline);
-
-	VkViewport viewport{};
-	viewport.x = 0.0f;
-	viewport.y = 0.0f;
-	viewport.width = (float)1280;
-	viewport.height = (float)720;
-	viewport.minDepth = 0.0f;
-	viewport.maxDepth = 1.0f;
-	vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
-
-	vkCmdDraw(commandBuffer, 3, 1, 0, 0);
-
-	vkCmdEndRenderPass(commandBuffer);
+	VkBufferCopy copyRegion = {};
+//	copyRegion.size = bufferSize;
+//	vkCmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, 1, &copyRegion); // ensure sync so that write
+//	// has started before copy starts
 
 	if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS)
 	{
@@ -439,7 +428,7 @@ recordComputeCommandBuffer(VkCommandBuffer commandBuffer)
 		0,
 		nullptr);
 
-	vkCmdDispatch(commandBuffer, 564654564 / 256, 1, 1);
+	vkCmdDispatch(commandBuffer, 564654564 / 256, 1, 1); // change with img dims
 
 	if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS)
 	{
