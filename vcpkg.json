@@ -1,0 +1,10 @@
+{
+  "name" : "vulk",
+  "version-string" : "1.0.0",
+  "builtin-baseline" : "223b8d5695bd0615e1eeba393c64770f6faf20e7",
+  "dependencies" : [ {
+    "name" : "opencv",
+    "version>=" : "4.7.0#1",
+    "$comment" : "    # this is heuristically generated, and may not be correct\n\n    find_package(OpenCV CONFIG REQUIRED)\n\n    # note: 12 additional targets are not displayed.\n\n    target_link_libraries(main PRIVATE opencv_ml tegra_hal opencv_dnn opencv_core)\n"
+  } ]
+}
