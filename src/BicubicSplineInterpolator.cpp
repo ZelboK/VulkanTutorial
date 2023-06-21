@@ -10,6 +10,7 @@
 #include <set>
 #include <array>
 #include <string>
+#include <opencv2/opencv.hpp>
 
 const int MAX_FRAMES_IN_FLIGHT = 2;
 
@@ -100,8 +101,8 @@ void BicubicSplineInterpolator::createLogicalDevice()
 	vkGetDeviceQueue(device, indices.graphicsAndComputeFamily.value(), 0, &computeQueue);
 }
 
-void BicubicSplineInterpolator::run()
-{
+template<> void BicubicSplineInterpolator::run<cv::Mat>( cv::Mat image) {
+    mapToGPUBuffer(image);
 	initWindow();
 	initVulkan();
 	mainLoop();
@@ -198,7 +199,9 @@ void BicubicSplineInterpolator::cleanup()
 void BicubicSplineInterpolator::pickPhysicalDevice()
 {
 	uint32_t deviceCount = 0;
-	vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
+	vkEnumeratePhysicalDevices(instance,
+                               &deviceCount,
+                               nullptr);
 
 	if (deviceCount == 0)
 	{
@@ -439,4 +442,23 @@ recordComputeCommandBuffer(VkCommandBuffer commandBuffer)
 
 void BicubicSplineInterpolator::updateUniformBuffer(uint32_t currentImage) {
 
+}
+
+
+template <class Image>
+void BicubicSplineInterpolator::mapToGPUBuffer(Image image) {
+    VkDeviceMemory bufferMemory;
+    VkDeviceSize bufferSize;
+    void* data;
+
+    VkResult result = vkMapMemory(device,
+                bufferMemory,
+                0,
+                bufferSize,
+                0, &data);
+    if (result != VK_SUCCESS) {
+        throw std::runtime_error("failed to record image buffer!");
+    }
+    memcpy(data, image.data, static_cast<size_t>(bufferSize));
+    vkUnmapMemory(device, bufferMemory);
 }

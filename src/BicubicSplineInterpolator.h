@@ -31,7 +31,8 @@ const std::vector<const char*> deviceExtensions = {
 class BicubicSplineInterpolator
 {
  public:
-	void run();
+    template <class Image>
+	void run(Image image);
 
  private:
 	VkPipelineLayout pipelineLayout;
@@ -97,5 +98,8 @@ class BicubicSplineInterpolator
 	void updateUniformBuffer(uint32_t currentImage);
 
 	void conduct();
+
+    template <class Image>
+    void mapToGPUBuffer(Image image);
 };
 #endif //VULK_BICUBICSPLINEINTERPOLATOR_H

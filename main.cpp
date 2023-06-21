@@ -4,16 +4,15 @@
 #include <cstdlib>
 #include "src/BicubicSplineInterpolator.h"
 #include <filesystem>
-
+#include <opencv2/opencv.hpp>
 
 int main() {
-	std::filesystem::path working_dir = std::filesystem::current_path();
-	std::cout << "Working directory: " << working_dir << "\n";
 
-	//TriangleApplication app;
+    cv::Mat image = cv::imread("resources/gabimaru.jpg", cv::IMREAD_COLOR);
+
 	BicubicSplineInterpolator app;
     try {
-        app.run();
+        app.run(image);
     } catch (const std::exception &e) {
         std::cerr << e.what() << std::endl;
         return EXIT_FAILURE;
